@@ -1,12 +1,24 @@
-import buildServer from "./server";
+import Fastify from 'fastify';
+import userRoutes from './modules/user/user.route';
 
-const server = buildServer();
+const server = Fastify();
+
+server.get('/healthcheck', async () => {
+  return {
+    status: 'OK',
+  };
+});
 
 async function main() {
   try {
-    await server.listen(3000, "0.0.0.0");
+    server.register(userRoutes, {
+      prefix: 'api/users',
+    });
 
-    console.log(`Server ready at http://localhost:3000`);
+    await server.listen({
+      port: 3000,
+    });
+    console.log('server running port: 3000');
   } catch (e) {
     console.error(e);
     process.exit(1);
